@@ -1,5 +1,5 @@
 import express from 'express'
-import Product from '../productModel/productModel.js'
+import Product from '../productModel/ProductModel.js'
 import User from '../../user/userModel/userModel.js'
 import {protect} from '../../authMiddleware/protectRoute.js'
 import mongoose from 'mongoose'
