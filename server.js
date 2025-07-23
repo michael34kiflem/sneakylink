@@ -22,6 +22,6 @@ app.get('/' , (req , res)=>{
 
 connectToDatabase()
 
-app.listen(8000 , ()=>{
-    console.log('server is connected on port 8000')
+app.listen(process.env.PORT , ()=>{
+    console.log('server is connected ')
 })
