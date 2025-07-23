@@ -5,7 +5,7 @@ import User from '../userModel/userModel.js'
 import dotenv from 'dotenv'
 
 import { sendPasswordReset } from "../../authMiddleware/sendPasswordResetEmail.js";
-import Product from "../../product/productModel/productModel.js";
+import Product from "../../product/productModel/ProductModel.js";
 import { protect } from "../../authMiddleware/protectRoute.js";
 dotenv.config()
 const userRoute = express.Router()
