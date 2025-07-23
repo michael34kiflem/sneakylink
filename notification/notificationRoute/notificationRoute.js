@@ -13,6 +13,9 @@ const storeToken = async (req, res) => {
   try {
     const { userId, expoPushToken } = req.body;
 
+    if(!expoPushToken) {
+      res.status(404).json({message :'No token found'})
+    }
     if (!Expo.isExpoPushToken(expoPushToken)) {
       return res.status(400).json({ error: 'Invalid Expo push token' });
     }
