@@ -13,25 +13,58 @@ const storeToken = async (req, res) => {
   try {
     const { userId, expoPushToken } = req.body;
 
-    if(!expoPushToken) {
-      res.status(404).json({message :'No token found'})
-    }
-    if (!Expo.isExpoPushToken(expoPushToken)) {
-      return res.status(400).json({ error: 'Invalid Expo push token' });
+    // Validate inputs
+    if (!userId || !expoPushToken) {
+      return res.status(400).json({ 
+        error: 'Both userId and expoPushToken are required' 
+      });
     }
 
-    // Upsert token (update if exists, otherwise create)
-    await Notification.findOneAndUpdate(
-      { userId },
-      { expoPushToken },
-      { upsert: true, new: true }
+    if (!Expo.isExpoPushToken(expoPushToken)) {
+      return res.status(400).json({ 
+        error: 'Invalid Expo push token format' 
+      });
+    }
+
+    // Prepare the full document
+    const fullDocument = {
+      userId,
+      expoPushToken,
+      updatedAt: new Date(),
+
+    };
+
+    // Try to upsert the document
+    const result = await Notification.findOneAndUpdate(
+      { expoPushToken }, // Find by token
+      { 
+        $set: fullDocument,
+        $setOnInsert: { createdAt: new Date() } // Only set on insert
+      },
+      { 
+        upsert: true, // Create if doesn't exist
+        new: true, // Return the modified document
+        runValidators: true // Ensure validation runs
+      }
     );
 
-    res.status(200).json({ message: 'Token saved successfully' });
+    // Determine if this was an insert or update
+    const action = result.createdAt?.getTime() === result.updatedAt?.getTime() 
+      ? 'created' 
+      : 'updated';
+
+   
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error in storeToken:', error);
+    
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      details: error.message 
+    });
   }
-}
+};
+
 
 // Send Notification to Single User
 const sendToUser = async (req, res) => {
