@@ -14,7 +14,8 @@ const notificationTokenSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  } , 
+
 });
 
 const Notification = mongoose.model('Notification', notificationTokenSchema);

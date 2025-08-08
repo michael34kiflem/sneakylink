@@ -113,8 +113,18 @@ const fetchSingleProduct = async (req, res) => {
       { _id: userId },
       { $set: { cart: updatedCart } }
     );
-
-    res.status(200).json({ cart: updatedCart });
+   
+    const cartProduct = {
+          product: productId, 
+          quantity:quantity || 1, 
+          name: product.name,
+          subtitle: product.subtitle,
+          images: product.images,
+          price: product.price,
+          size: size,
+          color: color,
+    }
+    res.status(200).json({ cart: cartProduct});
 
   } catch (error) {
     console.error('Cart Error:', error);
