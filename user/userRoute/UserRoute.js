@@ -62,7 +62,8 @@ const loginUser = asyncHandler(async(req , res)=>{
                 address:user.address
                 
             });
-        }
+        } 
+        console.log('token is ' ,genToken(user?._id))
     
     } else {
         clearTimeout(timeOut)

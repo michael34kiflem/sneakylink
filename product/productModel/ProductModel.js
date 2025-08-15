@@ -13,7 +13,9 @@ const productSchema = new mongoose.Schema(
     },
     subtitle: {
       type: String,
-
+    },
+    usergroup: {
+      type: String
     },
     description: {
       type: String,

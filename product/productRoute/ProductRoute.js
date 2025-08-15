@@ -380,34 +380,36 @@ const orderProduct = async (req, res) => {
         const user = await User.findById(req.user.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
-        }
+        } 
 
-        const {orderData} = req.body;
-        const product = await Product.findById(orderData?.selectedProduct?._id);
+  
+
+        const { orderItems, shippingAddress, paymentMethod } = req.body;
+        console.log('value is' ,orderItems , shippingAddress , paymentMethod)
+        const product = await Product.findById(orderItems[0]?.product);
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
         
         const orderItem = {
             product: product._id,
-            quantity: orderData?.currentOrder?.quantity,
+            quantity: orderItems?.quantity,
             priceAtPurchase: product.price,
             name: product.name,
-            images: product.image ,
+            images: product.image,
             subtitle: product.subtitle,
-            color:orderData?.currentOrder?.color ,
-            size: orderData?.currentOrder?.size, 
+            color: orderItems?.color,
+            size: orderItems?.size,
         };
         
         const newOrder = {
             items: [orderItem],
-            totalAmount: product.price * (orderData?.currentOrder.quantity || 1),
-            paymentBank:orderData?.currentOrder?.paymentBank || 'cash' ,
-            paymentImage: orderData?.paymentImage || 'cash', 
-             paymentMethod:orderData?.currentOrder?.PaymentMethod, // Assuming all items have the same payment method
+            totalAmount: product.price * (orderItems?.quantity || 1),
+            paymentBank: orderItems?.paymentBank || 'cash',
+            paymentImage: orderItems?.paymentImage || 'cash',
+            paymentMethod: paymentMethod, // Assuming all items have the same payment method
             status: 'pending', // Added quotes around 'pending'
-            shippingAddress: orderData?.currentOrder.shippingAddress ,
-          
+            shippingAddress: shippingAddress,
         };
         
         user.orders.push(newOrder); // Changed from user.order to user.orders to match your schema
@@ -519,7 +521,7 @@ const orderProducts = async (req, res) => {
         if (!user) return res.status(404).json({ message: 'User not found' });
 
         const { orderItems, shippingAddress, paymentMethod } = req.body; 
-        console.log(orderItems)
+       
 
         if(shippingAddress === undefined || paymentMethod === undefined || orderItems.length === 0) {
             return res.status(400).json({ message: 'Invalid order data' });
