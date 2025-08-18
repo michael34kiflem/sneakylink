@@ -8,12 +8,53 @@ const ProductRoute = express.Router()
 
 
 
-const productData = async(req ,res)=>{
-    const product = await Product.find({})
-    res.json({message : "sucess" , data : product})
-  
+const productData = async(req ,res)=>{ 
+    try { 
+        const skip = req.params.skip || 0;
+        const product = await Product.find({}).limit(20);
+        const Total = await Product.countDocuments({});
+        res.json({message : "sucess" , data : product , total : Total}) 
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
 }
 
+
+
+const fetchTheNext = async(req ,res)=>{ 
+    try { 
+        const skip = req.params.skip || 10;
+        console.log(skip)
+        const product = await Product.find({}).skip(skip).limit(10);
+        console.log(product)
+        res.json({message : "sucess" , data : product}) 
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
+
+const fetchBasedOnUserGroup = async(req ,res)=>{ 
+    try { 
+        const product = await Product.find({usergroup: req.params.usergroup}).limit(10);
+        console.log(product)
+        res.json({message : "sucess" , data : product}) 
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
+
+
+const fetchTheNextProductBasedOnUserGroup = async(req ,res)=>{ 
+    try { 
+        const skip = req.params.skip || 10;
+        console.log(skip)
+        const product = await Product.find({usergroup: req.params.usergroup}).skip(skip).limit(10);
+        console.log(product)
+        res.json({message : "sucess" , data : product}) 
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
 
 const fetchSingleProduct = async (req, res) => {
   try {
@@ -385,7 +426,7 @@ const orderProduct = async (req, res) => {
   
 
         const { orderItems, shippingAddress, paymentMethod } = req.body;
-        console.log('value is' ,orderItems , shippingAddress , paymentMethod)
+        ('value is' ,orderItems , shippingAddress , paymentMethod)
         const product = await Product.findById(orderItems[0]?.product);
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
@@ -593,7 +634,11 @@ const fetchOrderStage = async (req, res) => {
 
 }
 
+
 ProductRoute.route('/').get(productData)
+ProductRoute.route('/usergroup/:usergroup').get(fetchBasedOnUserGroup)
+ProductRoute.route('/:usergroup/:skip').get(fetchTheNextProductBasedOnUserGroup)
+ProductRoute.route('/:skip').get(fetchTheNext)
 ProductRoute.route('/addquantity').post(addQuantity) 
 ProductRoute.route('/fetchorder/:orderId').get(protect, fetchOrderForReview)
 ProductRoute.route('/order').post(protect, orderProducts)
