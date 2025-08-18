@@ -6,6 +6,18 @@ import mongoose from 'mongoose'
 const ProductRoute = express.Router()
 
 
+const fetchAllProducts = async(req ,res)=>{ 
+    try { 
+      
+        const product = await Product.find({})
+        const Total = await Product.countDocuments({});
+        res.json({message : "sucess" , product : product , total : Total}) 
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+}
+
+
 
 
 const productData = async(req ,res)=>{ 
@@ -13,7 +25,7 @@ const productData = async(req ,res)=>{
         const skip = req.params.skip || 0;
         const product = await Product.find({}).limit(20);
         const Total = await Product.countDocuments({});
-        res.json({message : "sucess" , data : product , total : Total}) 
+        res.json({message : "sucess" , product : product , total : Total}) 
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
@@ -636,6 +648,7 @@ const fetchOrderStage = async (req, res) => {
 
 
 ProductRoute.route('/').get(productData)
+ProductRoute.route('/all').get(fetchAllProducts)
 ProductRoute.route('/usergroup/:usergroup').get(fetchBasedOnUserGroup)
 ProductRoute.route('/:usergroup/:skip').get(fetchTheNextProductBasedOnUserGroup)
 ProductRoute.route('/:skip').get(fetchTheNext)
