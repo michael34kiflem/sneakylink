@@ -35,7 +35,7 @@ const productData = async(req ,res)=>{
 
 const fetchTheNext = async(req ,res)=>{ 
     try { 
-        const skip = req.params.skip || 10;
+        const skip = req.params.skip || 0;
         console.log(skip)
         const product = await Product.find({}).skip(skip).limit(10);
         console.log(product)
@@ -67,6 +67,8 @@ const fetchTheNextProductBasedOnUserGroup = async(req ,res)=>{
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 }
+
+
 
 const fetchSingleProduct = async (req, res) => {
   try {
@@ -649,6 +651,7 @@ const fetchOrderStage = async (req, res) => {
 
 ProductRoute.route('/').get(productData)
 ProductRoute.route('/all').get(fetchAllProducts)
+ProductRoute.route('/single/:id').get(fetchSingleProduct)
 ProductRoute.route('/usergroup/:usergroup').get(fetchBasedOnUserGroup)
 ProductRoute.route('/:usergroup/:skip').get(fetchTheNextProductBasedOnUserGroup)
 ProductRoute.route('/:skip').get(fetchTheNext)
@@ -656,7 +659,6 @@ ProductRoute.route('/addquantity').post(addQuantity)
 ProductRoute.route('/fetchorder/:orderId').get(protect, fetchOrderForReview)
 ProductRoute.route('/order').post(protect, orderProducts)
 ProductRoute.route('/decreasequantity').post(decreaseQuantity)
-ProductRoute.route('/single/:id').get(fetchSingleProduct)
 ProductRoute.route('/order').post(orderProduct);
 ProductRoute.route('/catagory').get(fetchCategory); 
 ProductRoute.route('/orderCartProducts').post(orderCartProducts);

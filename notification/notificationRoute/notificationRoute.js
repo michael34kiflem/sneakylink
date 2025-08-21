@@ -13,12 +13,14 @@ const storeToken = async (req, res) => {
 
     // Validate inputs
     if (!userId || !expoPushToken) {
+      console.error('[storeToken] Missing userId or expoPushToken:', { userId, expoPushToken });
       return res.status(400).json({ 
         error: 'Both userId and expoPushToken are required' 
       });
     }
 
     if (!Expo.isExpoPushToken(expoPushToken)) {
+      console.error('[storeToken] Invalid Expo push token format:', expoPushToken);
       return res.status(400).json({ 
         error: 'Invalid Expo push token format' 
       });
@@ -31,19 +33,27 @@ const storeToken = async (req, res) => {
       updatedAt: new Date(),
     };
 
-    // Try to upsert the document
-    const result = await Notification.findOneAndUpdate(
-      { expoPushToken }, // Find by token
-      { 
-        $set: fullDocument,
-        $setOnInsert: { createdAt: new Date() } // Only set on insert
-      },
-      { 
-        upsert: true, // Create if doesn't exist
-        new: true, // Return the modified document
-        runValidators: true // Ensure validation runs
-      }
-    );
+    let result;
+    try {
+      result = await Notification.findOneAndUpdate(
+        { userId }, // Find by userId
+        { 
+          $set: fullDocument,
+          $setOnInsert: { createdAt: new Date() } // Only set on insert
+        },
+        { 
+          upsert: true, // Create if doesn't exist
+          new: true, // Return the modified document
+          runValidators: true // Ensure validation runs
+        }
+      );
+    } catch (dbError) {
+      console.error('[storeToken] Database error:', dbError);
+      return res.status(500).json({
+        error: 'Database error',
+        details: dbError.message
+      });
+    }
 
     // Determine if this was an insert or update
     const action = result.createdAt?.getTime() === result.updatedAt?.getTime() 
@@ -56,8 +66,7 @@ const storeToken = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in storeToken:', error);
-    
+    console.error('[storeToken] Unexpected error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
       details: error.message 
