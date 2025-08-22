@@ -649,27 +649,27 @@ const fetchOrderStage = async (req, res) => {
 }
 
 
+
 ProductRoute.route('/').get(productData)
 ProductRoute.route('/all').get(fetchAllProducts)
 ProductRoute.route('/single/:id').get(fetchSingleProduct)
+ProductRoute.route('/favorite/:id').get(fetchFavoriteProduct) 
 ProductRoute.route('/usergroup/:usergroup').get(fetchBasedOnUserGroup)
-ProductRoute.route('/:usergroup/:skip').get(fetchTheNextProductBasedOnUserGroup)
+ProductRoute.route('/usergroup/:usergroup/:skip').get(fetchTheNextProductBasedOnUserGroup)
 ProductRoute.route('/:skip').get(fetchTheNext)
 ProductRoute.route('/addquantity').post(addQuantity) 
 ProductRoute.route('/fetchorder/:orderId').get(protect, fetchOrderForReview)
 ProductRoute.route('/order').post(protect, orderProducts)
 ProductRoute.route('/decreasequantity').post(decreaseQuantity)
-ProductRoute.route('/order').post(orderProduct);
-ProductRoute.route('/catagory').get(fetchCategory); 
-ProductRoute.route('/orderCartProducts').post(orderCartProducts);
-ProductRoute.route('/fetchOrder').get(protect ,fetchOrder); 
+ProductRoute.route('/order').post(protect, orderProduct)
+ProductRoute.route('/catagory').get(fetchCategory) 
+ProductRoute.route('/orderCartProducts').post(protect, orderCartProducts)
+ProductRoute.route('/fetchOrder').get(protect, fetchOrder) 
 ProductRoute.route('/cart').post(fetchCartProduct)
 ProductRoute.route('/addtocart').post(addToCart) 
 ProductRoute.route('/addtofavorite').post(addToFavorite)
-ProductRoute.route('/favorite/:id').get(fetchFavoriteProduct) 
-ProductRoute.route('/deletecart/:productId').delete(protect , deleteFromCart) 
-ProductRoute.route('/addQuantity').delete(deleteFromCart) 
-ProductRoute.route('/deletefavorite/:productId').delete(protect , deleteFromFavorite)  
+ProductRoute.route('/deletecart/:productId').delete(protect, deleteFromCart) 
+ProductRoute.route('/deletefavorite/:productId').delete(protect, deleteFromFavorite) 
 
 
 
